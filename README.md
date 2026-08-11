@@ -1,6 +1,7 @@
 # Microcontroller-Based LED Roulette — Hardware & Firmware Design (STM32)
 
-ETTI Project Journal — **National University of Science and Technology Politehnica Bucharest (ETTI)**. Complete end-to-end implementation of an electronic roulette game using an STM32 microcontroller and shift registers.
+ * [![Project Showcase](https://img.shields.io/badge/Project Showcase-blue?style=for-the-badge)](https://cureamariocosmin.github.io/Microcontroller-Based-LED-Roulette/)
+ Complete end-to-end implementation of an electronic roulette game using an STM32 microcontroller and shift registers.
 
 > **Tools:** STM32CubeMX · HAL Library · UART | **Author:** Mario-Cosmin Curea
 
@@ -42,4 +43,4 @@ This project focuses on designing and programming an electronic roulette game im
 * Ensured unpredictable roulette outcomes by extracting a pseudo-random seed from the 10-bit ADC modulo 41.
 * Delivered a fully functional, interactive real-time game integrated across multiple MCU peripherals (GPIO, UART, TIM).
 
-* [![Project Showcase](https://img.shields.io/badge/Vezi_Proiectul-Live-blue?style=for-the-badge)](https://cureamariocosmin.github.io/Microcontroller-Based-LED-Roulette/)
+
