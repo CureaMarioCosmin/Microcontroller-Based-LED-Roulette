@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jurnal Proiect - Joc Ruletă pe STM32F103CBTx</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --navy-900:#2E0A0E;
+  --navy-800:#3D1013;
+  --navy-700:#4A1418;
+  --navy-650:#5C1A1E;
+  --blue-600:#8F2C2C;
+  --blue-500:#E23C34;
+  --blue-400:#EA6A63;
+  --blue-300:#F1A79E;
+  --blue-100:#FBEAE7;
+  --paper:#F8F5F4;
+  --card:#FFFFFF;
+  --ink:#241413;
+  --muted:#7D6E6C;
+  --muted-light:#A89996;
+  --border:#EFE1DF;
+  --amber:#D9862E;
+  --amber-bg:#FBF0E1;
+  --green:#28965E;
+  --green-bg:#E4F6ED;
+  --red:#D14545;
+  --blue-bg:#FBEAE7;
+  --radius-lg:22px;
+  --radius-md:16px;
+  --radius-sm:10px;
+  --shadow-card:0 10px 30px -14px rgba(61,16,19,0.28);
+  --shadow-card-hover:0 16px 36px -14px rgba(61,16,19,0.38);
+  --shadow-fab:0 14px 30px -8px rgba(226,60,52,0.5);
+  --font-display:'Space Grotesk', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --font-mono:'Space Mono', monospace;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  line-height: 1.6;
+}
+img,svg{display:block;max-width:100%;}
+button{font-family:inherit;}
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative;
+  background:
+    radial-gradient(1100px 500px at 15% -10%, rgba(234,106,99,0.25), transparent 60%),
+    linear-gradient(165deg, var(--navy-900) 0%, var(--navy-800) 45%, var(--navy-650) 100%);
+  padding:56px 24px 120px;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(241,167,158,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241,167,158,0.06) 1px, transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(to bottom, black, transparent 75%);
+  pointer-events:none;
+}
+.hero-inner{
+  position:relative;
+  max-width:1040px;
+  margin:0 auto;
+  text-align:center;
+}
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:0.06em;
+  color:var(--blue-300);
+  background:rgba(241,167,158,0.1);
+  border:1px solid rgba(241,167,158,0.25);
+  padding:7px 14px;
+  border-radius:999px;
+  text-transform: uppercase;
+}
+.hero-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  color:#fff;
+  font-size:clamp(34px, 5.2vw, 56px);
+  line-height:1.08;
+  margin:22px 0 10px;
+  letter-spacing:-0.01em;
+}
+.hero-title span{color:var(--blue-400);}
+.hero-subtitle{
+  font-size:16.5px;
+  color:var(--blue-300);
+  font-weight:500;
+  margin:0 0 34px;
+}
+.identity-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  margin-top:24px;
+}
+.id-chip{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:3px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(241,167,158,0.22);
+  border-radius:var(--radius-sm);
+  padding:10px 16px;
+  min-width:150px;
+  text-align:left;
+}
+.id-chip .id-label{
+  font-size:10.5px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--muted-light);
+}
+.id-chip .id-value{
+  font-family:var(--font-mono);
+  font-size:14px;
+  color:#fff;
+  word-break:break-word;
+}
+
+/* ---------- STATS CLUSTER ---------- */
+.stats-cluster{
+  max-width:960px;
+  margin:-72px auto 0;
+  position:relative;
+  z-index:2;
+  padding:0 24px;
+}
+.cluster-panel{
+  background:var(--navy-800);
+  border:1px solid rgba(241,167,158,0.18);
+  border-radius:var(--radius-lg);
+  box-shadow:0 24px 50px -18px rgba(46,10,14,0.55);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+}
+.cluster-item{
+  padding:22px 18px;
+  text-align:center;
+  border-right:1px solid rgba(241,167,158,0.14);
+}
+.cluster-item:last-child{border-right:none;}
+.cluster-label{
+  font-size:11px;
+  letter-spacing:0.09em;
+  text-transform:uppercase;
+  color:var(--blue-300);
+  margin-bottom:8px;
+}
+.cluster-value{
+  font-family:var(--font-mono);
+  font-weight:700;
+  font-size:clamp(18px,2.6vw,26px);
+  color:#fff;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- MAIN CONTENT ---------- */
+.content{
+  max-width:960px;
+  margin:0 auto;
+  padding:56px 24px 40px;
+}
+.section-head{
+  margin-top: 40px;
+  margin-bottom:20px;
+}
+.section-head h2{
+  font-family:var(--font-display);
+  font-size:28px;
+  margin:0 0 6px;
+  color:var(--ink);
+}
+.section-head p{
+  margin:0;
+  color:var(--muted);
+  font-size:15px;
+}
+
+/* ---------- CARDS ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:28px 32px;
+  box-shadow:var(--shadow-card);
+  margin-bottom: 24px;
+  transition:box-shadow .18s ease, transform .18s ease;
+}
+.card:hover{box-shadow:var(--shadow-card-hover);transform:translateY(-2px);}
+.card p { margin-top: 0; margin-bottom: 16px; text-align: justify; }
+.card p:last-child { margin-bottom: 0; }
+
+.card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.badge{
+  font-size:12.5px;
+  font-weight:700;
+  padding:5px 12px;
+  border-radius:999px;
+  letter-spacing:0.01em;
+}
+.badge.type-oil{background:var(--blue-bg);color:var(--blue-600);}
+.badge.type-service{background:var(--amber-bg);color:var(--amber);}
+.badge.type-delivery{background:var(--green-bg);color:var(--green);}
+
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:24px;
+}
+.field-label{
+  display:block;
+  font-size:10.5px;
+  letter-spacing:0.07em;
+  text-transform:uppercase;
+  color:var(--muted-light);
+  margin-bottom:8px;
+}
+.field-value{
+  display:block;
+  font-size:14px;
+  color:var(--ink);
+  line-height:1.45;
+}
+
+/* ---------- LISTS (piese-list mapping) ---------- */
+.piese-list{
+  margin:0 0 16px 0;
+  padding:0;
+  list-style:none;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.piese-list li{
+  font-size:13.5px;
+  background:var(--paper);
+  border:1px solid var(--border);
+  color:var(--ink);
+  padding:6px 12px;
+  border-radius:var(--radius-sm);
+}
+.piese-list li a { color: var(--blue-600); text-decoration: none; font-weight: 600;}
+.piese-list li a:hover { text-decoration: underline; }
+
+/* ---------- TABLES ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 13.5px;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 12px 15px;
+  text-align: left;
+}
+th {
+  background-color: var(--paper);
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+tr:nth-child(even) {
+  background-color: #faf7f7;
+}
+
+/* ---------- IMAGES ---------- */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.image-grid img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.photo-frame {
+  display: block;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin: 20px auto;
+  max-width: 80%;
+}
+
+@media (max-width:720px){
+  .cluster-panel{grid-template-columns:repeat(2,1fr);}
+  .cluster-item:nth-child(2){border-right:none;}
+  .cluster-item:nth-child(3){border-right:1px solid rgba(241,167,158,0.14);}
+  .card-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    
+    <h1 class="hero-title">Joc Ruletă cu <span>LED-uri</span></h1>
+    <p class="hero-subtitle">Microcontroller STM32F103CBTx</p>
+
+    <div class="identity-chips">
+      <div class="id-chip">
+        <span class="id-label">Platformă</span>
+        <span class="id-value">STM32F103CBTx</span>
+      </div>
+      <div class="id-chip">
+        <span class="id-label">Afișaj</span>
+        <span class="id-value">24 LED-uri</span>
+      </div>
+      <div class="id-chip">
+        <span class="id-label">Registre</span>
+        <span class="id-value">3x 74HC595</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-cluster">
+  <div class="cluster-panel">
+    <div class="cluster-item">
+      <div class="cluster-label">Total Piese BOM</div>
+      <div class="cluster-value">69</div>
+    </div>
+    <div class="cluster-item">
+      <div class="cluster-label">Flash Utilizat</div>
+      <div class="cluster-value">26.8 KB</div>
+    </div>
+    <div class="cluster-item">
+      <div class="cluster-label">RAM Utilizat</div>
+      <div class="cluster-value">7.1 KB</div>
+    </div>
+    <div class="cluster-item">
+      <div class="cluster-label">Clock sistem</div>
+      <div class="cluster-value">72 MHz</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="section-head">
+    <h2>1. Modul de implementare</h2>
+    <p>Detalii despre interfața cu utilizatorul și conexiunile principale</p>
+  </div>
+  
+  <div class="card">
+    <div class="card-top">
+      <span class="badge type-oil">Prezentare Generală</span>
+    </div>
+    <p><b>Jocul de ruleta a fost implementat pe un microcontroller "STM32F103CBTx".</b> Interfata cu utilizatorul este realizata prin 24 de leduri (12 verzi si 12 galbene) legate la 24 de rezistente de 220 ohm care sunt conectate la pinii de iesire a 3 registre de deplasare 74HC595. Am folosit cate un registru pentru 8 leduri, astfel primele 8 leduri conectate la primul registru index 0-7, urmatoarele 8 conectate la al doilea registru index 8-15 si ultimele 8 conectate la al treilea registru index 16-23.</p>
+    <p>Registrele primesc informatiile in felul urmator: DS(pin 14) conectat la GPIO_OUTPUT PA1 al microcontrollerlui, SHCP (pin 11) GPIO_OUTPUT PA2 al microcontrollerlui, STCP (pin 12) GPIO_OUTPUT PA3 al microcontrollerlui, OE(pin 13) la gnd(ground), MR(pin10) conectat la sursa de alimentare de 3.3V, VCC(pin 16) conecta la sursa de alimentare de 3.3V, pinul de gnd conectat la masa, cei 8 pini de output respectiv Q0-Q7 conectati la rezistentele care ulterior sunt conectate la cele 24 de leduri( cate 8 rezistente pentru fiecare registru).</p>
+    <p>Jocul are si 3 butoane conectate in felul urmator GPIO_INPUT PA4 al microcontrollerlui pentru butonul de selectare pariu, urmatorul la GPIO_INPUT PA5 al microcontrollerlui pentru butonul de confirmare si GPIO_INPUT PA6 al microcontrollerlui pentru butonul de start.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="margin-bottom:0;">
+      <span class="field-label">Componente I/O</span>
+      <ul class="piese-list">
+          <li>3 butoane control</li>
+          <li>3 registre (PA1)</li>
+          <li>Convertor USB-TTL</li>
+          <li>24 Led-uri afișaj</li>
+      </ul>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <span class="field-label">Componente adiționale</span>
+      <ul class="piese-list">
+          <li>Fire conexiuni</li>
+          <li>3 Breadboard-uri</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Specificații Componente</h2>
+    <p>Detalii tehnice despre piesele utilizate în ansamblu</p>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge type-service">Registru de Deplasare 74HC595 (DIP-16)</span>
+    </div>
+    <ul class="piese-list">
+        <li>8 biți intrare serială, 8 biți ieșire paralelă</li>
+        <li>Tehnologie CMOS</li>
+        <li>Tensiune de alimentare: 2V - 6V DC</li>
+        <li>Output 3-State (până la 15 intrări LSTTL)</li>
+        <li>Memorare cu bistabil de tip D</li>
+        <li>Consum maxim: 80uA</li>
+        <li>Timp de propagare: 13ns</li>
+        <li>Curent de ieșire de: +-20mA, la 5V</li>
+        <li>Frecvență maximă de operare: 25MHz @ 4.5V</li>
+    </ul>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-top">
+        <span class="badge type-service">Buton tactil 6x6x6 mm</span>
+      </div>
+      <ul class="piese-list">
+          <li>Tip: normally open</li>
+          <li>Pull-up intern activat</li>
+          <li>Dimensiuni: 6x6x6 mm</li>
+          <li>Tensiune operare: 3.3V</li>
+      </ul>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-top">
+        <span class="badge type-service">USB-TTL convertor</span>
+      </div>
+      <ul class="piese-list">
+          <li>Tip chip: CH340 / CP2102</li>
+          <li>Scop: programare/debug UART</li>
+          <li>Tensiune logică: 3.3V</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="section-head">
+    <h2>2. Descrierea hardware</h2>
+    <p>Poze din timpul asamblării și tabelul cu lista completă de materiale (BOM)</p>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge type-delivery">Galerie Foto</span>
+    </div>
+    <p><b>Proiectul realizat complet</b></p>
+    <img src="Final Product 1.JPG" class="photo-frame" alt="Proiect realizat complet">
+
+    <p><b>Placa de test</b> (Am lipit toate componentele necesare pentru funcționarea microcontrolerului și am realizat conexiunile pentru restul componentelor hardware)</p>
+    <div class="image-grid">
+        <img src="Final Product 2.JPG" alt="Placa de test 1">
+        <img src="Final Product 3.JPG" alt="Placa de test 2">
+    </div>
+
+    <p style="margin-top:20px;"><b>Imagini din timpul asamblării</b></p>
+    <div class="image-grid">
+        <img src="Assembly Part 1.JPG" alt="Asamblare 1">
+        <img src="Assembly Part 2.JPG" alt="Asamblare 2">
+        <img src="Assembly Part 3.JPG" alt="Asamblare 3">
+        <img src="Assembly Part 4.JPG" alt="Asamblare 4">
+        <img src="Assembly Part 5.JPG" alt="Asamblare 5">
+        <img src="Assembly Part 6.JPG" alt="Asamblare 6">
+        <img src="Assembly Part 7.jpg" alt="Asamblare 7">
+        <img src="Assembly Part 8.JPG" alt="Asamblare 8">
+    </div>
+  </div>
+
+  <div class="card" style="overflow-x: auto;">
+    <div class="card-top">
+      <span class="badge type-delivery">Bill of Materials (BOM)</span>
+    </div>
+    <table>
+        <tr><th>Cantitate</th><th>REF</th><th>Valoare</th><th>Capsulă</th><th>Furnizor</th><th>Preț estimativ</th></tr>
+        <tr><td>1</td><td>U1</td><td>STM32F103CBTx</td><td>SMD</td><td>UPB</td><td>-</td></tr>
+        <tr><td>6</td><td>C3, C4, C5, C6, C7, C15</td><td>100nF</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>2</td><td>C8, C9</td><td>20pF</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>2</td><td>C2, C12</td><td>10uF</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>R10</td><td>10 Ω</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>R5</td><td>10k Ω</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>R6</td><td>1M Ω</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>3</td><td>R1, R2, R3</td><td>220 Ω</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>2</td><td>R4, R12</td><td>100k Ω</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>R7</td><td>1.5k Ω</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>3</td><td>R8, R9, R11</td><td>220 Ω</td><td>SMD0805</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>U2</td><td>3.3V</td><td>LM11175</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>D4</td><td>LED verde</td><td>THT</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>Y1</td><td>cuart</td><td>THT</td><td>UPB</td><td>-</td></tr>
+        <tr><td>3</td><td>SW1, SW2, SW3</td><td></td><td>THT</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>J7</td><td>HEADER 1X6</td><td>THT</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>J8</td><td>HEADER 2X3</td><td>THT</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>D1</td><td>LED RGB</td><td>SMD</td><td>UPB</td><td>-</td></tr>
+        <tr><td>2</td><td>BOOT 0,1</td><td>JUMPERI</td><td>-</td><td>UPB</td><td>-</td></tr>
+        <tr><td>1</td><td>J2</td><td>CONECTOR USB</td><td>SMD</td><td>UPB</td><td>-</td></tr>
+        <tr><td>12</td><td>LED-uri verzi</td><td>5mm</td><td>THT</td><td>Optimus digital</td><td>-</td></tr>
+        <tr><td>12</td><td>LED-uri galbene</td><td>5mm</td><td>THT</td><td>Optimus digital</td><td>-</td></tr>
+        <tr><td>24</td><td>Rezistente</td><td>220 Ω</td><td>THT</td><td>Optimus digital</td><td>-</td></tr>
+        <tr><td>3</td><td>74HC595</td><td>DIP-16</td><td>THT</td><td>Optimus digital</td><td>-</td></tr>
+        <tr><td>3</td><td>Butoane</td><td>-</td><td>THT</td><td>Optimus digital</td><td>-</td></tr>
+    </table>
+  </div>
+
+
+  <div class="section-head">
+    <h2>3. Descrierea software</h2>
+    <p>Biblioteci, funcții principale și resurse procesor</p>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge type-oil">Logica și Inițializarea</span>
+    </div>
+    <p style="text-indent: 30px;">Software-ul gestionează aprinderea LED-urilor într-o secvență de ruletă, folosind un seed generat pe baza timpului apăsării. Funcția debounce a fost implementată pentru a preveni efectele de apăsare multiplă ale butoanelor.</p>
+    <p style="text-indent: 30px;">Software-ul de test a fost dezvoltat pentru a demonstra accesarea resurselor hardware ale microcontrollerului STM32 folosind biblioteca HAL. Codul este generat automat cu STM32CubeMX, iar modificările facute sunt încadrate între secțiunile comentate /* USER CODE BEGIN / și / USER CODE END */, pentru a fi păstrate la regenerarea codului. Funcționalitățile implementate includ: Inițializarea resurselor hardware (GPIO, TIM2, UART1, RCC etc.) a fost realizată cu STM32CubeMX: Clockul sistemului este configurat la 72MHz folosind un oscilator extern de 8MHz și PLL x9. Timer2 este configurat pentru a genera întreruperi la fiecare 10ms (Prescaler 7199, Period 100) UART1 funcționează la 9600 bps, fără paritate, 8 biți de date, mod asincron, cu întreruperi activate pentru recepție. Aplicația este implementată pe o platformă STM32 folosind bibliotecile STM32Cube HAL, fiind structurată în jurul unei bucle infinite și a tratării evenimentelor prin întreruperi. 
+    </p>
+    <p style="text-indent: 30px;">Acest cod reprezintă implementarea completă a unui joc de tip ruletă electronică pe o platformă STM32 folosind HAL. Jocul este controlat prin butoane fizice, afișează rezultatele pe un panou LED și comunică cu utilizatorul prin interfața UART. Codul este organizat în mai multe funcții relevante pentru desfășurarea jocului.
+    </p>
+
+    <p style="text-indent: 30px;">Funcția <code>selectBet()</code> permite utilizatorului să selecteze o poziție (între 0 și 23) pe care dorește să parieze, utilizând un buton pentru navigare și altul pentru confirmare. Poziția selectată este afișată în timp real pe panoul de LED-uri, controlat prin funcțiile <code>shiftOut()</code> (care transmite în serie date către LED-uri) și <code>displayLED()</code> (care afișează un anumit LED în funcție de indexul selectat).
+    </p>
+
+    <p style="text-indent: 30px;">Funcția principală a jocului, rouletteGame(uint8_t bet), simulează rotirea ruletei. Aceasta aprinde secvențial LED-urile de pe panou într-un mod progresiv încetinitor, pentru a crea efectul de ruletă care se oprește aleatoriu pe o poziție. Dacă LED-ul final corespunde pariului utilizatorului, un mesaj de câștig este transmis prin UART și LED-ul câștigător clipește; în caz contrar, se afișează un mesaj de pierdere.
+    </p>
+
+    <p style="text-indent: 30px;">Pe lângă logica de joc, codul gestionează și interacțiunea utilizatorului prin UART cu funcția <code>HAL_UART_RxCpltCallback()</code>, care răspunde la comenzi text trimise prin portul serial. Temporizările sunt gestionate de <code>HAL_TIM_PeriodElapsedCallback()</code>, care controlează starea LED-urilor RGB, simulând un efect de "puls" în funcție de starea jocului (de exemplu, schimbarea vitezei de iluminare prin apăsarea unui buton).
+    </p>
+
+    <p style="text-indent: 30px;">În <code>main()</code>, logica principală este structurată într-o mașină de stări (SM_State), cu două moduri de funcționare: iluminare rapidă și lentă, schimbabile printr-un buton fizic (USER). În bucla principală, apăsarea unui alt buton declanșează procesul de selecție a pariului și inițiază jocul.
+    </p>
+
+    <p style="text-indent: 30px;">Acest proiect demonstrează un control integrat între perifericele microcontrollerului STM32 — GPIO, UART, TIM — pentru a implementa un joc interactiv în timp real.</p>
+      
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-top">
+        <span class="badge type-service">Resurse procesor</span>
+      </div>
+      <span class="field-label">Pini utilizați</span>
+      <ul class="piese-list">
+          <li>GPIO OUT: PA1, PA2, PA3</li>
+          <li>GPIO IN: PA4, PA5, PA6</li>
+          <li>ADC: 10 biți intern</li>
+      </ul>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 10px;">Debounce-ul filtrează fluctuațiile, iar ADC-ul modulo 41 obține o distribuție pseudoaleatoare.</p>
+    </div>
+    
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-top">
+        <span class="badge type-service">Raport Compilator (Test1.elf)</span>
+      </div>
+      <span class="field-label">Dimensiuni memorie</span>
+      <ul class="piese-list">
+          <li>Text (Flash): 26 344 byte</li>
+          <li>Data (RAM init): 472 bytes</li>
+          <li>BSS (RAM neinit): 6672 bytes</li>
+      </ul>
+      <img src="Screenshot 2025-06-03 173507.png" alt="Raport compilator" style="margin-top:10px; border:1px solid var(--border); border-radius:4px;">
+    </div>
+  </div>
+
+
+  <div class="section-head">
+    <h2>4. Rezultate și Concluzii</h2>
+  </div>
+
+  <div class="card">
+    <p>Proiectul a reușit să respecte cerințele inițiale. LED-urile rulează în secvență corespunzătoare, iar interacțiunea prin cele trei butoane funcționează stabil.</p>
+    <span class="field-label">Concluzii tehnice</span>
+    <ul class="piese-list">
+        <li>Utilizarea 74HC595 a permis controlul a 24 LED-uri cu 3 pini</li>
+        <li>Funcția de debounce a stabilizat inputul stabil</li>
+        <li>Folosirea ADC-ului pentru seed a fost eficientă</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge type-custom">Bibliografie</span>
+    </div>
+    <ul class="piese-list">
+        <li><a href="http://ham.elcom.pub.ro/proiect2/index.html#Introducere" target="_blank">HAMELECOM Proiect 2</a></li>
+        <li><a href="https://www.youtube.com/watch?v=QI1IJLB42G8&t=185s&ab_channel=Mario%27sIdeas" target="_blank">YouTube - registru deplasare</a></li>
+        <li>Wikipedia</li>
+        <li>Google</li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>
