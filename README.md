@@ -1,7 +1,7 @@
 # Microcontroller-Based LED Roulette — Hardware & Firmware Design (STM32)
 
- * [![Project Showcase](https://img.shields.io/badge/Project Showcase-blue?style=for-the-badge)](https://cureamariocosmin.github.io/Microcontroller-Based-LED-Roulette/)
- Complete end-to-end implementation of an electronic roulette game using an STM32 microcontroller and shift registers.
+ * [![Project Showcase](https://img.shields.io/badge/Project_Showcase-blue?style=for-the-badge)](https://cureamariocosmin.github.io/Microcontroller-Based-LED-Roulette/)
+ * Complete end-to-end implementation of an electronic roulette game using an STM32 microcontroller and shift registers.
 
 > **Tools:** STM32CubeMX · HAL Library · UART | **Author:** Mario-Cosmin Curea
 
